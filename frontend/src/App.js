@@ -4,7 +4,7 @@ import Login from "./components/Login/Login";
 import Register from "./components/Login/Register";
 import EditUser from "./components/User/EditUser"
 import Userlist from "./components/User/UserList"
-import Home from "./components/Layout/Home"
+import Userprofile from "./components/User/UserProfile.js"
 import ProductList from "./components/Product/ProductList";
 import AddProduct from "./components/Product/AddProduct";
 import EditProduct from "./components/Product/EditProduct";
@@ -24,7 +24,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
         <Route path="/users" element={<Userlist />}/>
-        <Route path="/home" element={<Home />}/>
+        <Route path="/userprofile" element={<Userprofile />}/>
         <Route path="/Product" element={<ProductList/>}/>
         <Route path="/Product/add" element={<AddProduct/>}/>
         <Route path="/Product/edit/:id" element={<EditProduct/>}/>

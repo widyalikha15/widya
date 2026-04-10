@@ -6,6 +6,7 @@ import { fetchUsers, removeUser } from "../../Services/userService";
 
 const UserList = () => {
   const [authUser, setAuthUser] = useState({
+    userId: "",
     name: "",
     email: "",
   });
@@ -60,7 +61,7 @@ return (
           <div className="container">
             <div className="box">
               <h1 className="title is-4">
-                Welcome Back: {authUser.name} - {authUser.email}
+                Welcome Back: {authUser.name} - {authUser.email} - {authUser.userId}
               </h1>
 
               {loading ? (
@@ -70,6 +71,7 @@ return (
                   <thead>
                     <tr>
                       <th>No</th>
+                      <th>Id</th>
                       <th>Name</th>
                       <th>Email</th>
                       <th>Gender</th>
@@ -80,6 +82,7 @@ return (
                     {users.map((user, index) => (
                       <tr key={user.id}>
                         <td>{index + 1}</td>
+                        <td>{user.id}</td>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
                         <td>{user.gender}</td>

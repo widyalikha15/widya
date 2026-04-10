@@ -5,6 +5,7 @@ import { refreshToken, logoutUser } from "../../Services/authService";
 
 const Navbar = () => {
   const [user, setUser] = useState({
+    id: "",
     name: "",
     email: "",
   });
@@ -161,7 +162,7 @@ const Navbar = () => {
                   <hr />
 
                   <Link
-                    to="/profile"
+                    to="/userprofile"
                     className="dropdown-item"
                     onClick={() =>
                       setIsDropdownOpen(false)

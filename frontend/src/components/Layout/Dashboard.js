@@ -8,7 +8,7 @@ const Dashboard = () => {
     return (
         <div>
             <Navbar/>
-            
+            <div className="hero has-background-grey-light is-fullheight"></div>
         </div>
     )
 }

@@ -9,6 +9,7 @@ export const refreshToken = async (navigate) => {
     return {
       success: true,
       user: {
+        userId: decoded.userId,
         name: decoded.name,
         email: decoded.email,
       },

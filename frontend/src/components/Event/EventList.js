@@ -129,6 +129,7 @@ const EventList = () => {
     };
     return (
         <div><Navbar/>
+         <div className="hero has-background-grey-light is-fullheight">
         <h1>Welcome Back: {name} - {email}</h1>
         <div className="columns is-variable is-8">
         <div className="column is-12-mobile is-6-desktop">
@@ -185,6 +186,7 @@ const EventList = () => {
           />
         </div>
       </div>
+    </div>
     </div>
     )
 }

@@ -9,6 +9,7 @@ const Authorization = () => {
     const [setUsers] = useState([]);
     const [setName] = useState('');
     const [setEmail] = useState('');
+    const [setId] = useState('');
     const history = useNavigate();
     useEffect(() => {
         refreshToken();
@@ -21,6 +22,7 @@ const Authorization = () => {
             const response = await axios.get('http://localhost:5000/token');
             setToken(response.data.accessToken);
             const decoded = jwtDecode(response.data.accessToken);
+            setId(decoded.id);
             setName(decoded.name);
             setEmail(decoded.email);
             setExpire(decoded.exp);

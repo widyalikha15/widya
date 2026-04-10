@@ -26,6 +26,7 @@ const ProductList = () => {
 
   return (
     <div><Navbar/>
+    <div className="hero has-background-grey-light is-fullheight">
     <div className="container mt-5">
       <Link to="/product/add" className="button is-success">
         Add New
@@ -59,6 +60,7 @@ const ProductList = () => {
           </div>
         ))}
       </div>
+    </div>
     </div>
     </div>
   );

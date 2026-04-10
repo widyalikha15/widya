@@ -48,6 +48,7 @@ const CustomerList = () => {
 
   return (
     <div><Navbar/>
+     <div className="hero has-background-grey-light is-fullheight">
     <div className="container mt-5">
       <div className="columns">
         <div className="column is-centered">
@@ -114,6 +115,7 @@ const CustomerList = () => {
           </nav>
         </div>
       </div>
+    </div>
     </div>
     </div>
   );
