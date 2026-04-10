@@ -7,6 +7,7 @@ import {
   updateEmployee,
   deleteEmployee
 } from "../../Services/employeeService.js";
+import Navbar from "../Layout/Navbar.js";
 
 export default function EmployeePage() {
   const [employees, setEmployees] = useState([]);
@@ -39,21 +40,26 @@ export default function EmployeePage() {
   };
 
   return (
-    <div style={{ display: "flex", gap: 30 }}>
-      <div style={{ width: "35%" }}>
-        <EmployeeForm
-          onSubmit={handleSubmit}
-          selected={selected}
-        />
-      </div>
-
-      <div style={{ width: "65%" }}>
-        <EmployeeTable
-          employees={employees}
-          onEdit={setSelected}
-          onDelete={handleDelete}
-        />
-      </div>
+    <>
+  <Navbar />
+   <div className="hero has-background-grey-light is-fullheight">
+  <div style={{ display: "flex", gap: 30, color:"#000000"}}>
+    <div style={{ width: "35%",  color:"#000000"}}>
+      <EmployeeForm
+        onSubmit={handleSubmit}
+        selected={selected}
+      />
     </div>
+
+    <div style={{ width: "65%", color:"#000000"}}>
+      <EmployeeTable
+        employees={employees}
+        onEdit={setSelected}
+        onDelete={handleDelete}
+      />
+    </div>
+  </div>
+  </div>
+</>
   );
 }

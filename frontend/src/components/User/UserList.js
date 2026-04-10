@@ -1,120 +1,113 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../Login/Navbar';
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../Layout/Navbar";
+import { refreshToken } from "../../Services/authService";
+import { fetchUsers, removeUser } from "../../Services/userService";
 
 const UserList = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [token, setToken] = useState('');
-    const [expire, setExpire] = useState('');
-    const [users, setUsers] = useState([]);
-    const history = useNavigate();
- 
-    useEffect(() => {
-        refreshToken();
-        getUsers();
-    }, []);
- 
-    const refreshToken = async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/token');
-            setToken(response.data.accessToken);
-            const decoded = jwtDecode(response.data.accessToken);
-            setName(decoded.name);
-            setEmail(decoded.email);
-            setExpire(decoded.exp);
-        } catch (error) {
-            if (error.response) {
-                history("/");
-            }
-        }
-    }
- 
-    const axiosJWT = axios.create();
- 
-    axiosJWT.interceptors.request.use(async (config) => {
-        const currentDate = new Date();
-        if (expire * 1000 < currentDate.getTime()) {
-            const response = await axios.get('http://localhost:5000/token');
-            config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-            setToken(response.data.accessToken);
-            const decoded = jwtDecode(response.data.accessToken);
-            setName(decoded.name);
-            setExpire(decoded.exp);
-        }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
- 
-    const getUsers = async () => {
-    try{
-        const response = await axiosJWT.get('http://localhost:5000/users', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        setUsers(response.data);
-    } catch (error) {
-        if (error.response) {
-            history("/");
-        }
-    }
-    }
-    const deleteUser = async (id) => {
+  const [authUser, setAuthUser] = useState({
+    name: "",
+    email: "",
+  });
+  const [token, setToken] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  const loadUsers = useCallback(
+    async (accessToken) => {
       try {
-        await axios.delete(`http://localhost:5000/users/${id}`);
-        getUsers();
+        const response = await fetchUsers(accessToken);
+        setUsers(response.data);
       } catch (error) {
-        console.log(error);
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    const initializePage = async () => {
+      const result = await refreshToken(navigate);
+
+      if (result.success) {
+        setAuthUser(result.user);
+        setToken(result.token);
+        await loadUsers(result.token);
       }
     };
-    return (
-        <div><Navbar/>
-        <div className="container mt-5">
-            <h1>Welcome Back: {name} - {email}</h1>
-            <table className="table is-striped is-fullwidth">
-                <thead>
+
+    initializePage();
+  }, [navigate, loadUsers]);
+
+  const handleDelete = async (id) => {
+    try {
+      await removeUser(id, token);
+      await loadUsers(token);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+return (
+    <>
+      <Navbar />
+
+      <div className="hero has-background-grey-light is-fullheight">
+        <div className="hero-body">
+          <div className="container">
+            <div className="box">
+              <h1 className="title is-4">
+                Welcome Back: {authUser.name} - {authUser.email}
+              </h1>
+
+              {loading ? (
+                <p>Loading users...</p>
+              ) : (
+                <table className="table is-striped is-fullwidth">
+                  <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Gender</th>
+                      <th>No</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Gender</th>
+                      <th>Action</th>
                     </tr>
-                </thead>
-                <tbody>
+                  </thead>
+                  <tbody>
                     {users.map((user, index) => (
-                        <tr key={user.id}>
-                            <td>{index + 1}</td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.gender}</td>
-                            <td>
-                            <Link
-                              to={`edit/${user.id}`}
-                              className="button is-small is-info mr-2"
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              onClick={() => deleteUser(user.id)}
-                              className="button is-small is-danger"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
+                      <tr key={user.id}>
+                        <td>{index + 1}</td>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.gender}</td>
+                        <td>
+                          <Link
+                            to={`edit/${user.id}`}
+                            className="button is-small is-info mr-2"
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="button is-small is-danger"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
                     ))}
- 
-                </tbody>
-            </table>
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
         </div>
-        </div>
-    )
-}
+      </div>
+    </>
+  );
+};
 
 export default UserList;

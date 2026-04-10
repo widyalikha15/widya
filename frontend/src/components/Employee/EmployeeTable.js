@@ -1,5 +1,6 @@
 export default function EmployeeTable({ employees, onEdit, onDelete }) {
   return (
+    <div>
     <table border="1" width="100%" cellPadding="8">
       <thead>
         <tr>
@@ -33,5 +34,6 @@ export default function EmployeeTable({ employees, onEdit, onDelete }) {
         ))}
       </tbody>
     </table>
+    </div>
   );
 }

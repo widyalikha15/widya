@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import Navbar from "../Login/Navbar";
+import Navbar from "../Layout/Navbar";
 import axiosBaseURL from "../../httpCommon";
 
 const CustomerList = () => {

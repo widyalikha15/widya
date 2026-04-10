@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "../Login/Navbar";
+import Navbar from "../Layout/Navbar.js";
 import axios from "axios";
 
 const buildEmployeeTree = (employees, parentPositionId = null) => {

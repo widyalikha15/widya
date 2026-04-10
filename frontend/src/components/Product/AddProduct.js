@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Login/Navbar";
+import Navbar from "../Layout/Navbar.js";
 
 const AddProduct = () => {
   const [title, setTitle] = useState("");
