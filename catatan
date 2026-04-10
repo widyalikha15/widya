@@ -1,0 +1,56 @@
+######### ruuunnn
+backend node js https://nodejs.org/docs/latest/api/
+
+PS D:\aplikasi\backend> nodemon index   http://localhost/phpmyadmin/index.php?route=/server/databases
+
+frontend react js https://legacy.reactjs.org/docs/getting-started.html
+npm start
+PS D:\aplikasi\frontend> npm start http://localhost:3000/ 
+
+#######
+C:\Users\User\AppData\Roaming delete folder npm dan npm chance
+########
+
+PS D:\aplikasi\backend> node -v
+PS D:\aplikasi\backend> npm init -y
+PS D:\aplikasi\backend> npm -v
+PS D:\aplikasi\backend> npm i express mysql2 sequelize cors 
+
+"type": "module", 
+
+PS D:\aplikasi\backend> nodemon -v  
+PS D:\aplikasi\backend> npm i -g nodemon
+
+localhost/phpmyadmin/
+
+extention rest client
+
+
+npm start
+http://localhost:3000/
+
+ES7+ React/Redux/React-Native snippets
+v4.4.3
+
+npm install bootstrap
+
+npm install express mysql2 sequelize jsonwebtoken bcrypt cookie-parser dotenv cors
+
+npm install react-router-dom axios jwt-decode bulma
+
+https://mfikri.com/artikel/login-jwt-express-react-mysql
+
+
+npm i --save @fortawesome/fontawesome-svg-core
+npm install --save @fortawesome/free-solid-svg-icons
+npm install --save @fortawesome/react-fontawesome
+
+The 'Access-Control-Allow-Origin' header has a value 'http://localhost:3000' that is not equal to the supplied origin. react
+
+ npm i cors
+ 
+npm install express-fileupload
+npm install fs-extra
+npm install multer
+
+npm i express-fileupload
