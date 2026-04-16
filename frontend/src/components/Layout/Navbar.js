@@ -96,6 +96,9 @@ const Navbar = () => {
             <Link to="/events" className="navbar-item">
               Events
             </Link>
+            <Link to="/customer-products">Customer Product List</Link>
+            {" | "}
+            <Link to="/customer-products/add">Add Customer Product</Link>
           </div>
 
           {/* Profile Dropdown */}

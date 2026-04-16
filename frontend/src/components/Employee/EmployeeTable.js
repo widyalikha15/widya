@@ -18,7 +18,6 @@ export default function EmployeeTable({ employees, onEdit, onDelete }) {
             <td>{emp.name}</td>
             <td>{emp.email}</td>
             <td>{emp.phone}</td>
-             {/* ✅ ALIAS BENAR */}
             <td>{emp.position?.name || "-"}</td>
             <td>{emp.status}</td>
             <td>

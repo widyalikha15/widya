@@ -9,6 +9,7 @@ import EmployeeRoute from "./routes/EmployeeRoute.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import FileUpload from "express-fileupload";
+import customerProductRoutes from "./routes/customerProductRoutes.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(CustomerRoute);
 app.use(EventRoute);
 app.use(PositionRoute);
 app.use(EmployeeRoute);
+app.use(customerProductRoutes);
 
 app.listen(5000, ()=> console.log('server up and running...'));
 

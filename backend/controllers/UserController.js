@@ -34,18 +34,25 @@ export const CreateUser = async(req, res) => {
     }
 }
 
-export const UpdateUser = async(req, res) => {
-    try {
-        await User.update(req.body,{
-            where:{
-                id: req.params.id
-            }
-        });
-        res.status(201).json({msg: "User Updated"});
-    } catch (error) {
-        console.log(error.message);
-    }
-}
+export const UpdateUser = async (req, res) => {
+  try {
+    await User.update(
+      {
+        ...req.body,
+        last_profile_update: new Date(),
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+
+    res.status(201).json({ msg: "User Updated" });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 export const deleteUser = async(req, res) => {
     try {
@@ -77,40 +84,66 @@ export const Register = async(req, res) => {
     }
 }
  
-export const Login = async(req, res) => {
-    try {
-        const user = await User.findAll({
-            where:{
-                email: req.body.email
-                //name: req.body.name
-            }
-        });
-        const match = await bcrypt.compare(req.body.password, user[0].password);
-        if(!match) return res.status(400).json({msg: "Wrong Password"});
-        const userId = user[0].id;
-        const name = user[0].name;
-        const email = user[0].email;
-        const accessToken = jwt.sign({userId, name, email}, process.env.ACCESS_TOKEN_SECRET,{
-            expiresIn: '20s'
-        });
-        const refreshToken = jwt.sign({userId, name, email}, process.env.REFRESH_TOKEN_SECRET,{
-            expiresIn: '1d'
-        });
-        await User.update({refresh_token: refreshToken},{
-            where:{
-                id: userId
-            }
-        });
-        res.cookie('refreshToken', refreshToken,{
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000
-        });
-        res.json({ accessToken });
-    } catch (error) {
-        res.status(404).json({msg:"Email tidak ditemukan"});
+export const Login = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        email: req.body.email,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ msg: "Email tidak ditemukan" });
     }
-}
- 
+
+    const match = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!match) {
+      return res.status(400).json({ msg: "Wrong Password" });
+    }
+
+    const userId = user.id;
+    const name = user.name;
+    const email = user.email;
+
+    const accessToken = jwt.sign(
+      { userId, name, email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "20s" }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId, name, email },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    await User.update(
+      {
+        refresh_token: refreshToken,
+        last_login: new Date(),
+        login_device:
+          req.headers["user-agent"] || "Unknown Device",
+      },
+      {
+        where: { id: userId },
+      }
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken });
+  } catch (error) {
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
 export const Logout = async(req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if(!refreshToken) return res.sendStatus(204);

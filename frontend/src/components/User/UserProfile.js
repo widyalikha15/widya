@@ -1,29 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../Layout/Navbar";
-import { useNavigate } from "react-router-dom";
-import { refreshToken } from "../../Services/authService.js";
+import { refreshToken } from "../../Services/authService";
+import { getEmployees } from "../../Services/employeeService";
 
 const UserProfile = () => {
-  const [user, setUser] = useState({
+  const [authUser, setAuthUser] = useState({
     userId: "",
     name: "",
     email: "",
   });
 
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
+  const loadProfile = useCallback(
+    async (loginEmail) => {
+      try {
+        const response = await getEmployees();
+
+        const foundEmployee = response.data.find(
+          (emp) => emp.email === loginEmail
+        );
+
+        setProfile(foundEmployee || null);
+      } catch (error) {
+        console.error(error);
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate]
+  );
+
   useEffect(() => {
-    const loadProfile = async () => {
+    const initializePage = async () => {
       const result = await refreshToken(navigate);
+
       if (result.success) {
-        setUser(result.user);
+        setAuthUser(result.user);
+        await loadProfile(result.user.email);
       }
     };
 
-    loadProfile();
-  }, [navigate]);
+    initializePage();
+  }, [navigate, loadProfile]);
 
-  const initial = user.name ? user.name.charAt(0).toUpperCase() : "U";
+  const initial = (profile?.name || authUser.name || "U")
+    .charAt(0)
+    .toUpperCase();
 
   return (
     <>
@@ -32,63 +60,150 @@ const UserProfile = () => {
       <section className="hero has-background-grey-light is-fullheight">
         <div className="hero-body">
           <div className="container">
-            <div className="box" style={{ maxWidth: "600px", margin: "0 auto" }}>
-              <div style={{ textAlign: "center", marginBottom: "30px" }}>
-                <div
-                  style={{
-                    width: "90px",
-                    height: "90px",
-                    borderRadius: "50%",
-                    background: "#363636",
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    margin: "0 auto 15px",
-                  }}
-                >
-                  {initial}
+            <div
+              className="box"
+              style={{ maxWidth: "700px", margin: "0 auto" }}
+            >
+              {loading ? (
+                <div className="has-text-centered">
+                  <button className="button is-loading is-white">
+                    Loading
+                  </button>
                 </div>
+              ) : (
+                <>
+                  {/* Header */}
+                  <div
+                    style={{
+                      textAlign: "center",
+                      marginBottom: "30px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "90px",
+                        height: "90px",
+                        borderRadius: "50%",
+                        background: "#363636",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "32px",
+                        fontWeight: "bold",
+                        margin: "0 auto 15px",
+                      }}
+                    >
+                      {initial}
+                    </div>
 
-                <h1 className="title is-4">My Profile</h1>
-                <p className="subtitle is-6">User account information</p>
-              </div>
+                    <h1 className="title is-4">My Profile</h1>
+                    <p className="subtitle is-6">
+                      Employee account information
+                    </p>
+                  </div>
 
-              <div className="content">
-                <div className="field">
-                  <label className="label">Full Name</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      value={user.name}
-                      readOnly
-                    />
-                  </div>
-                </div>
+                  {/* Profile Content */}
+                  <div className="content">
+                    <div className="field">
+                      <label className="label">Full Name</label>
+                      <input
+                        className="input"
+                        value={profile?.name || authUser.name}
+                        readOnly
+                      />
+                    </div>
 
-                <div className="field">
-                  <label className="label">Email</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      value={user.email}
-                      readOnly
-                    />
+                    <div className="field">
+                      <label className="label">Email</label>
+                      <input
+                        className="input"
+                        value={profile?.email || authUser.email}
+                        readOnly
+                      />
+                    </div>
+
+                    {/* ✅ FIXED USER ID */}
+                    <div className="field">
+                      <label className="label">ID</label>
+                      <input
+                        className="input"
+                        value={authUser.userId}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label className="label">Nomor HP</label>
+                      <input
+                        className="input"
+                        value={profile?.phone ?? ""}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label className="label">Jabatan</label>
+                      <input
+                        className="input"
+                        value={profile?.position?.name ?? ""}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label className="label">Status</label>
+                      <input
+                        className="input"
+                        value={profile?.status ?? ""}
+                        readOnly
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="field">
-                  <label className="label">ID</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      value={user.userId}
-                      readOnly
-                    />
+
+                  {/* Activity */}
+                  <div
+                    className="box"
+                    style={{
+                      background: "#fafafa",
+                      marginTop: "25px",
+                    }}
+                  >
+                    <h2 className="title is-6 mb-3">
+                      Recent Activity
+                    </h2>
+
+                    <div className="content">
+                      <p>
+                        <strong>Last Login:</strong>{" "}
+                        14 April 2026, 08:30 WIB
+                      </p>
+                      <p>
+                        <strong>Last Profile Update:</strong>{" "}
+                        13 April 2026, 19:10 WIB
+                      </p>
+                      <p>
+                        <strong>Latest Activity:</strong>{" "}
+                        Updated employee profile information
+                      </p>
+                      <p>
+                        <strong>Login Device:</strong>{" "}
+                        Windows PC - Edge Browser
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* ✅ FIXED EDIT LINK */}
+                  <div className="has-text-centered mt-5">
+                    <Link
+                      to={`/userprofile/edit/${authUser.userId}`}
+                      className="button is-info"
+                    >
+                      Edit Profile
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -96,122 +211,5 @@ const UserProfile = () => {
     </>
   );
 };
+
 export default UserProfile;
-
-
-// import React, { useEffect, useState, useCallback } from "react";
-// import { useNavigate, Link } from "react-router-dom";
-// import Navbar from "../Layout/Navbar";
-// import { refreshToken } from "../../Services/authService";
-// import { fetchUsers, removeUser } from "../../Services/userService";
-
-// const UserProfile = () => {
-//   const [authUser, setAuthUser] = useState({
-//     userId: "",
-//     name: "",
-//     email: "",
-//   });
-//   const [token, setToken] = useState("");
-//   const [users, setUsers] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   const navigate = useNavigate();
-
-//   const loadUsers = useCallback(
-//   async (accessToken, loginUserId) => {
-//     try {
-//       const response = await fetchUsers(accessToken);
-
-//       const filteredUsers = response.data.filter(
-//         (user) => user.id === loginUserId
-//       );
-
-//       setUsers(filteredUsers);
-//     } catch (error) {
-//       navigate("/");
-//     } finally {
-//       setLoading(false);
-//     }
-//   },
-//   [navigate]
-// );
-
-//  useEffect(() => {
-//   const initializePage = async () => {
-//     const result = await refreshToken(navigate);
-
-//     if (result.success) {
-//       setAuthUser(result.user);
-//       setToken(result.token);
-
-//       await loadUsers(result.token, result.user.userId);
-//     }
-//   };
-
-//   initializePage();
-// }, [navigate, loadUsers]);
-
-//   const handleDelete = async (id) => {
-//     try {
-//       await removeUser(id, token);
-//       await loadUsers(token);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-// return (
-//     <>
-//       <Navbar />
-
-//       <div className="hero has-background-grey-light is-fullheight">
-//         <div className="hero-body">
-//           <div className="container">
-//             <div className="box">
-//               <h1 className="title is-4">
-//                 Welcome Back: {authUser.name} - {authUser.email} - {authUser.userId}
-//               </h1>
-
-//               {loading ? (
-//                 <p>Loading users...</p>
-//               ) : (
-//                 <table className="table is-striped is-fullwidth">
-//                   <thead>
-//                     <tr>
-//                       <th>No</th>
-//                       <th>Id</th>
-//                       <th>Name</th>
-//                       <th>Email</th>
-//                       <th>Gender</th>
-//                       <th>Action</th>
-//                     </tr>
-//                   </thead>
-//                   <tbody>
-//                     {users.map((user, index) => (
-//                       <tr key={user.id}>
-//                         <td>{index + 1}</td>
-//                         <td>{user.id}</td>
-//                         <td>{user.name}</td>
-//                         <td>{user.email}</td>
-//                         <td>{user.gender}</td>
-//                         <td>
-//                           <Link
-//                             to={`edit/${user.id}`}
-//                             className="button is-small is-info mr-2"
-//                           >
-//                             Edit
-//                           </Link>
-//                         </td>
-//                       </tr>
-//                     ))}
-//                   </tbody>
-//                 </table>
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default UserProfile;

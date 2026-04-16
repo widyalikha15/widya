@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Navbar from "../Layout/Navbar";
 import axiosBaseURL from "../../httpCommon";
+import { Link } from "react-router-dom";
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -45,10 +46,17 @@ const CustomerList = () => {
     setMsg("");
     setKeyword(query);
   };
+  const deleteCustomer = async (id) => {
+  await axiosBaseURL.delete(`/customers/${id}`);
+  getCustomers();
+};
 
   return (
     <div><Navbar/>
      <div className="hero has-background-grey-light is-fullheight">
+      <Link to="/customers/add" className="button is-primary mb-3">
+      + Add Customer
+    </Link>
     <div className="container mt-5">
       <div className="columns">
         <div className="column is-centered">
@@ -77,6 +85,7 @@ const CustomerList = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Gender</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -86,6 +95,21 @@ const CustomerList = () => {
                   <td>{customer.name}</td>
                   <td>{customer.email}</td>
                   <td>{customer.gender}</td>
+                  <td>
+                  <Link
+                    to={`/customers/edit/${customer.id}`}
+                    className="button is-small is-info"
+                  >
+                    Edit
+                  </Link>
+
+                  <button
+                    className="button is-small is-danger ml-2"
+                    onClick={() => deleteCustomer(customer.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
                 </tr>
               ))}
             </tbody>
